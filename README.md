@@ -29,7 +29,7 @@ Diagrams & stills:
 ## What it is
 
 Every AI agent today has an isolated memory. Knowledge built in one tool vanishes in the next.
-[Centralaizer](https://github.com/lestercoyoyjr/Centralaizer) solves this *locally* — one shared
+[Centralaizer](https://github.com/lestercoyoyjr/Centralaizer-public) solves this *locally* — one shared
 memory hub per machine. **AIMessage is the network layer**: it lets those local hubs find each
 other and answer *"has anyone solved this job before?"* across a peer-to-peer mesh — without a
 central server, without cloud egress by default, and without leaking PHI/PII.
