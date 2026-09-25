@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aimessage"
+version = "1.0.0"
+description = "P2P mesh for AI agents to share de-identified knowledge, plugins, and MCP servers with E2E encryption"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Lester Coyoy" }]
+dependencies = [
+  "pynacl>=1.5",              # Ed25519 signing + libsodium SealedBox (E2E)
+]
+
+[project.optional-dependencies]
+# The real libp2p transport (heavy: trio, grpcio, aioquic, ...). Needed only for the libp2p/gossip/dht
+# node and their demos/tests; the socket path and everything else run without it.
+libp2p = ["libp2p>=0.7"]
+# The real Google Drive cold-tier backend. Not needed for the local/synced-folder cold store.
+gdrive = ["google-api-python-client>=2", "google-auth>=2", "google-auth-oauthlib>=1"]
+# Native desktop wrapper (desktop/app.py): opens the dashboard in the OS webview, no Rust/Node.
+desktop = ["pywebview>=5"]
+
+[project.scripts]
+aimessage = "aimessage.cli:main"
+
+[tool.setuptools]
+packages = ["aimessage"]

@@ -1,0 +1,25 @@
+#!/bin/sh
+# Block direct pushes to protected branches — go through a PR from develop.
+#
+# ponytail: client-side guard only. It's the free-tier substitute for GitHub
+# branch protection (which needs Pro or a public repo). It protects THIS machine
+# and is bypassable with --no-verify. Upgrade path: enable a repo ruleset on Pro
+# and this hook becomes redundant.
+#
+# Enable once per clone:  git config core.hooksPath githooks
+
+protected="refs/heads/main refs/heads/staging"
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+	for p in $protected; do
+		if [ "$remote_ref" = "$p" ]; then
+			branch=${remote_ref#refs/heads/}
+			echo "✋ Direct push to '$branch' is blocked. Open a PR from develop:" >&2
+			echo "   gh pr create --base $branch --head develop" >&2
+			echo "   (emergency bypass: git push --no-verify)" >&2
+			exit 1
+		fi
+	done
+done
+
+exit 0

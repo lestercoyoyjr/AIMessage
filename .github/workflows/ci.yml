@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, staging, main]
+  pull_request:
+    branches: [develop, staging, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install .            # installs the aimessage package (+ pynacl) from pyproject
+      - run: for f in tests/test_*.py; do echo "== $f =="; python "$f" || exit 1; done
+
+  # Actually exercise the network layer (gossip/dht/libp2p). Without this leg those tests
+  # self-skip when libp2p is absent and every mesh regression ships invisibly.
+  test-libp2p:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ".[libp2p]"
+      - name: Run the full suite WITH libp2p (network tests must not skip)
+        run: |
+          for f in tests/test_libp2p.py tests/test_gossip.py tests/test_dht.py; do
+            echo "== $f =="
+            out="$(python "$f")"; echo "$out"
+            echo "$out" | grep -q "skipped: libp2p not installed" && { echo "ERROR: $f skipped but libp2p is installed"; exit 1; }
+          done
+          for f in tests/test_*.py; do echo "== $f =="; python "$f" || exit 1; done
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t aimessage:ci .
+      - run: docker run --rm aimessage:ci   # runs demo/demo.py; nonzero exit fails the build

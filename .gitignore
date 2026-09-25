@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Env / secrets
+.env
+*.key
+*.pem
+node_identity*
+
+# Local data
+.localmem/
+data/
+
+# OS
+.DS_Store
+
+# Stray duplicate files (macOS iCloud "file 2.ext" pattern)
+* [0-9].py
+* [0-9].md
+* [0-9].html
+* [0-9].sh
+
+# Packaging build artifacts
+build/
+dist/
+*.egg-info/
